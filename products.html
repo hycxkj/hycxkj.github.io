@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>产品中心 - 卉语传心科技有限公司</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <img src="LOGO_long.png" alt="卉语传心科技">
+            </div>
+            <div class="nav-links">
+                <a href="index.html#home">首页</a>
+                <a href="index.html#about">关于我们</a>
+                <a href="index.html#org">组织架构</a>
+                <a href="index.html#team">核心团队</a>
+                <a href="products.html">产品服务</a>
+                <a href="index.html#contact">联系我们</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero" style="min-height: 70vh;">
+        <div class="hero-content">
+            <h1 class="hero-title">产品中心</h1>
+            <p class="hero-subtitle">探索我们的核心产品与服务</p>
+            <p class="hero-motto">用科技解决校园痛点，传递人文温度</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">实用产品研发</h2>
+        <div class="products-grid">
+            <div class="product-card" data-product="schedule">
+                <div class="product-content">
+                    <div class="product-title">桌面课表系统 V5.0.0即将上线</div>
+                    <div class="product-desc">轻量化课表工具，支持多端使用，让校园生活更便捷</div>
+                    <div class="product-tags">
+                        <span class="product-tag">实用工具</span>
+                        <span class="product-tag">多端同步</span>
+                        <span class="product-tag">时间管理</span>
+                    </div>
+                    <div class="product-actions">
+                    </div>
+                </div>
+            </div>
+            <div class="product-card" data-product="whisper">
+                <div class="product-content">
+                    <div class="product-title">轻语（暂未开放）</div>
+                    <div class="product-desc">AI情绪陪伴应用，用科技温暖心灵</div>
+                    <div class="product-tags">
+                        <span class="product-tag">AI陪伴</span>
+                        <span class="product-tag">心理健康</span>
+                        <span class="product-tag">情感支持</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">游戏开发</h2>
+        <div class="products-grid">
+            <div class="product-card" data-product="game">
+                <div class="product-content">
+                    <div class="product-title">逃离CD模拟器（在研）</div>
+                    <div class="product-desc">校园背景解压模拟游戏，释放学习压力</div>
+                    <div class="product-tags">
+                        <span class="product-tag">游戏开发</span>
+                        <span class="product-tag">校园题材</span>
+                        <span class="product-tag">休闲解压</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">公益项目</h2>
+        <div class="products-grid">
+            <div class="product-card" data-product="hidden">
+                <div class="product-content">
+                    <div class="product-title">隐藏的话</div>
+                    <div class="product-desc">关注青少年心理健康的公益项目，传递人文温度</div>
+                    <div class="product-tags">
+                        <span class="product-tag">公益项目</span>
+                        <span class="product-tag">心理健康</span>
+                        <span class="product-tag">青少年关怀</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="modal-overlay" class="modal-overlay"></div>
+    <div id="product-modal" class="modal">
+        <div class="modal-header">
+            <h3 id="modal-title" class="modal-title"></h3>
+            <button id="modal-close" class="modal-close">×</button>
+        </div>
+        <div class="modal-body">
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <footer>
+        <img src="LOGO_long.png" alt="卉语传心科技" class="footer-logo">
+        <p class="footer-text">卉语传心科技有限公司 - 用科技传递人文温度</p>
+        <p class="footer-text" style="margin-top: 0.5rem;">Copyright 2024 All Rights Reserved</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
