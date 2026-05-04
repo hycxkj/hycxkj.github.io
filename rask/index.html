@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow - 任务管理</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --black: #000000;
+            --gray1: #1d1d1f;
+            --gray2: #86868b;
+            --gray3: #f5f5f7;
+            --gray4: #fafafa;
+            --white: #ffffff;
+            --accent: #bf5af2;
+            --accent-light: #e8d5f9;
+            --blue: #0071e3;
+            --success: #34c759;
+            --warning: #ff9f0a;
+            --danger: #ff3b30;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+            background: var(--gray3);
+            min-height: 100vh;
+            color: var(--gray1);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .header {
+            background: var(--white);
+            padding: 0;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .header-content {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 52px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            width: 100px;
+            height: 36px;
+            object-fit: contain;
+        }
+
+        .header-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray2);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #9b59b6);
+        }
+
+        .nav-tabs {
+            background: var(--white);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .nav-tabs-content {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 22px;
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-tab {
+            padding: 16px 0;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--gray2);
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            position: relative;
+        }
+
+        .nav-tab:hover {
+            color: var(--gray1);
+        }
+
+        .nav-tab.active {
+            color: var(--gray1);
+            border-bottom-color: var(--accent);
+        }
+
+        .main-container {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 40px 22px;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+            color: var(--gray1);
+        }
+
+        .hero-subtitle {
+            font-size: 21px;
+            font-weight: 400;
+            color: var(--gray2);
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.02);
+            overflow: hidden;
+        }
+
+        .form-card {
+            padding: 40px;
+        }
+
+        .form-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 32px;
+            letter-spacing: -0.02em;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray2);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 14px 16px;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            background: var(--white);
+            color: var(--gray1);
+        }
+
+        .form-group input:hover,
+        .form-group select:hover,
+        .form-group textarea:hover {
+            border-color: rgba(0,0,0,0.15);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2386868b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #a64dd8;
+        }
+
+        .btn-secondary {
+            background: var(--gray3);
+            color: var(--gray1);
+        }
+
+        .btn-secondary:hover {
+            background: #e8e8ed;
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 28px 24px;
+            text-align: left;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.02);
+        }
+
+        .stat-number {
+            font-size: 40px;
+            font-weight: 600;
+            color: var(--gray1);
+            margin-bottom: 4px;
+            letter-spacing: -0.02em;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray2);
+        }
+
+        .stat-card.accent .stat-number {
+            color: var(--accent);
+        }
+
+        .filter-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--white);
+            padding: 4px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .filter-tab {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            color: var(--gray2);
+            font-family: inherit;
+        }
+
+        .filter-tab.active {
+            background: var(--gray1);
+            color: var(--white);
+        }
+
+        .filter-tab:hover:not(.active) {
+            color: var(--gray1);
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--white);
+            padding: 12px 16px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            width: 280px;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            width: 100%;
+            font-family: inherit;
+            color: var(--gray1);
+        }
+
+        .search-box input:focus {
+            outline: none;
+        }
+
+        .search-box input::placeholder {
+            color: var(--gray2);
+        }
+
+        .search-icon {
+            width: 18px;
+            height: 18px;
+            opacity: 0.4;
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .task-card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .task-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20px;
+            bottom: 20px;
+            width: 3px;
+            border-radius: 2px;
+            background: var(--accent);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .task-card:hover::before {
+            opacity: 1;
+        }
+
+        .task-card.priority-high::before {
+            background: var(--danger);
+            opacity: 1;
+        }
+
+        .task-card.priority-medium::before {
+            background: var(--warning);
+            opacity: 1;
+        }
+
+        .task-card.priority-low::before {
+            background: var(--success);
+            opacity: 1;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .task-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--gray1);
+            margin-bottom: 10px;
+            letter-spacing: -0.01em;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .task-tag {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            background: var(--gray3);
+            color: var(--gray2);
+        }
+
+        .task-tag.category {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .task-tag.priority-high {
+            background: rgba(255,59,48,0.1);
+            color: var(--danger);
+        }
+
+        .task-tag.priority-medium {
+            background: rgba(255,159,10,0.1);
+            color: var(--warning);
+        }
+
+        .task-tag.priority-low {
+            background: rgba(52,199,89,0.1);
+            color: var(--success);
+        }
+
+        .task-tag.status-pending {
+            background: rgba(255,159,10,0.1);
+            color: var(--warning);
+        }
+
+        .task-tag.status-progress {
+            background: rgba(52,199,89,0.1);
+            color: var(--success);
+        }
+
+        .task-tag.status-completed {
+            background: rgba(0,125,227,0.1);
+            color: var(--blue);
+        }
+
+        .task-description {
+            color: var(--gray2);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .task-deadline {
+            font-size: 13px;
+            color: var(--gray2);
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .task-action-btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .task-action-btn.edit {
+            background: var(--gray3);
+            color: var(--gray1);
+        }
+
+        .task-action-btn.edit:hover {
+            background: #e8e8ed;
+        }
+
+        .task-action-btn.delete {
+            background: rgba(255,59,48,0.1);
+            color: var(--danger);
+        }
+
+        .task-action-btn.delete:hover {
+            background: rgba(255,59,48,0.15);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 100px 20px;
+            color: var(--gray2);
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--gray1);
+            font-weight: 600;
+        }
+
+        .empty-state p {
+            font-size: 15px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 32px;
+            padding: 20px 0;
+        }
+
+        .pagination-btn {
+            padding: 8px 14px;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            background: var(--white);
+            color: var(--gray2);
+            font-weight: 500;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .pagination-btn.active {
+            background: var(--gray1);
+            color: var(--white);
+            border-color: var(--gray1);
+        }
+
+        .pagination-info {
+            font-size: 14px;
+            color: var(--gray2);
+            margin: 0 12px;
+        }
+
+        .progress-section {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.02);
+        }
+
+        .progress-section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 28px;
+            letter-spacing: -0.02em;
+        }
+
+        .progress-card {
+            background: var(--gray4);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .progress-card:hover {
+            background: var(--gray3);
+        }
+
+        .progress-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .progress-task-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--gray1);
+        }
+
+        .progress-status-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .progress-status-badge.pending {
+            background: rgba(255,159,10,0.1);
+            color: var(--warning);
+        }
+
+        .progress-status-badge.progress {
+            background: rgba(52,199,89,0.1);
+            color: var(--success);
+        }
+
+        .progress-status-badge.completed {
+            background: rgba(0,125,227,0.1);
+            color: var(--blue);
+        }
+
+        .progress-bar-container {
+            height: 6px;
+            background: rgba(0,0,0,0.06);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-bar-fill.completed {
+            background: var(--success);
+        }
+
+        .progress-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-slider {
+            flex: 1;
+            height: 4px;
+            -webkit-appearance: none;
+            background: rgba(0,0,0,0.1);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .progress-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(191,90,242,0.4);
+            transition: transform 0.2s ease;
+        }
+
+        .progress-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .progress-value {
+            min-width: 45px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--accent);
+        }
+
+        .progress-quick-btns {
+            display: flex;
+            gap: 6px;
+        }
+
+        .progress-quick-btn {
+            padding: 6px 12px;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            background: var(--white);
+            color: var(--gray2);
+            font-weight: 500;
+        }
+
+        .progress-quick-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 36px;
+            width: 90%;
+            max-width: 520px;
+            transform: scale(0.96);
+            transition: transform 0.2s ease;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--gray3);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray2);
+        }
+
+        .modal-close:hover {
+            background: var(--gray1);
+            color: white;
+        }
+
+        .modal .form-group {
+            margin-bottom: 18px;
+        }
+
+        .detail-modal {
+            max-width: 540px;
+        }
+
+        .detail-content {
+            margin-bottom: 28px;
+        }
+
+        .detail-row {
+            display: flex;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            width: 100px;
+            font-weight: 500;
+            color: var(--gray2);
+            font-size: 14px;
+        }
+
+        .detail-value {
+            flex: 1;
+            color: var(--gray1);
+            font-size: 14px;
+        }
+
+        .detail-value.description {
+            white-space: pre-wrap;
+            line-height: 1.7;
+            color: var(--gray2);
+        }
+
+        .detail-progress-bar {
+            height: 6px;
+            background: rgba(0,0,0,0.06);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .detail-progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .hero-subtitle {
+                font-size: 18px;
+            }
+
+            .stats-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-section {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .task-footer {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .progress-controls {
+                flex-direction: column;
+            }
+
+            .progress-quick-btns {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <img src="彩色无背景.png" alt="Logo" class="logo">
+                <span class="header-title">卉语传心科技有限公司任务规划与管理中心</span>
+            </div>
+            <div class="header-right">
+            </div>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <div class="nav-tabs-content">
+            <button class="nav-tab" data-page="add">添加任务</button>
+            <button class="nav-tab active" data-page="list">所有任务</button>
+            <button class="nav-tab" data-page="progress">进度</button>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        <div class="page" id="page-add">
+            <h1 class="hero-title">添加任务</h1>
+            <p class="hero-subtitle">向你的工作区添加一个新任务</p>
+
+            <div class="card form-card">
+                <h2 class="form-title">添加任务</h2>
+                <form id="taskForm">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>任务名称</label>
+                            <input type="text" id="taskName" placeholder="输入任务名称" required>
+                        </div>
+                        <div class="form-group">
+                            <label>分类</label>
+                            <select id="taskCategory">
+                                <option value="Work">工作</option>
+                                <option value="Todo">待办</option>
+                                <option value="Project">项目</option>
+                                <option value="Meeting">会议</option>
+                                <option value="Personal">个人</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>优先级</label>
+                            <select id="taskPriority">
+                                <option value="low">低</option>
+                                <option value="medium" selected>中</option>
+                                <option value="high">高</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>截止日期</label>
+                            <input type="date" id="taskDeadline">
+                        </div>
+                        <div class="form-group">
+                            <label>状态</label>
+                            <select id="taskStatus">
+                                <option value="pending">待处理</option>
+                                <option value="progress">进行中</option>
+                                <option value="completed">已完成</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>描述</label>
+                            <textarea id="taskDescription" placeholder="输入任务描述..."></textarea>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary" onclick="clearForm()">重置</button>
+                        <button type="submit" class="btn btn-primary">添加任务</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="page active" id="page-list">
+            <div class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTasks">0</div>
+                    <div class="stat-label">任务总数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingTasks">0</div>
+                    <div class="stat-label">待处理</div>
+                </div>
+                <div class="stat-card accent">
+                    <div class="stat-number" id="progressTasks">0</div>
+                    <div class="stat-label">进行中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completedTasks">0</div>
+                    <div class="stat-label">已完成</div>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all">所有任务</button>
+                    <button class="filter-tab" data-filter="pending">待处理</button>
+                    <button class="filter-tab" data-filter="progress">进行中</button>
+                    <button class="filter-tab" data-filter="completed">已完成</button>
+                </div>
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="搜索任务...">
+                </div>
+            </div>
+
+            <div class="task-list" id="taskList">
+            </div>
+            <div class="pagination" id="pagination">
+            </div>
+        </div>
+
+        <div class="page" id="page-progress">
+            <div class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-number" id="progressTotalTasks">0</div>
+                    <div class="stat-label">任务总数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="progressPendingTasks">0</div>
+                    <div class="stat-label">待处理</div>
+                </div>
+                <div class="stat-card accent">
+                    <div class="stat-number" id="progressInProgressTasks">0</div>
+                    <div class="stat-label">进行中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="progressCompletedTasks">0</div>
+                    <div class="stat-label">已完成</div>
+                </div>
+            </div>
+
+            <div class="progress-section">
+                <h3 class="progress-section-title">进度管理</h3>
+                <div id="progressList">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal detail-modal">
+            <div class="modal-header">
+                <h3 class="modal-title">任务详情</h3>
+                <button class="modal-close" onclick="closeDetailModal()">x</button>
+            </div>
+            <div class="detail-content" id="detailContent">
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary" onclick="closeDetailModal()">关闭</button>
+                <button type="button" class="btn btn-primary" id="detailEditBtn">编辑任务</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">编辑任务</h3>
+                <button class="modal-close" onclick="closeEditModal()">x</button>
+            </div>
+            <form id="editForm">
+                <input type="hidden" id="editTaskId">
+                <div class="form-group">
+                    <label>任务名称</label>
+                    <input type="text" id="editTaskName" required>
+                </div>
+                <div class="form-group">
+                    <label>分类</label>
+                    <select id="editTaskCategory">
+                        <option value="Work">工作</option>
+                        <option value="Todo">待办</option>
+                        <option value="Project">项目</option>
+                        <option value="Meeting">会议</option>
+                        <option value="Personal">个人</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>优先级</label>
+                    <select id="editTaskPriority">
+                        <option value="low">低</option>
+                        <option value="medium">中</option>
+                        <option value="high">高</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>截止日期</label>
+                    <input type="date" id="editTaskDeadline">
+                </div>
+                <div class="form-group">
+                    <label>描述</label>
+                    <textarea id="editTaskDescription"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存更改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('huiyuTasks')) || [];
+        let currentFilter = 'all';
+        let currentPage = 1;
+        const pageSize = 5;
+
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById('page-' + this.dataset.page).classList.add('active');
+            });
+        });
+
+        document.getElementById('taskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            addTask();
+        });
+
+        document.getElementById('editForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveTask();
+        });
+
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                currentPage = 1;
+                renderTasks();
+            });
+        });
+
+        document.getElementById('searchInput').addEventListener('input', function() {
+            currentPage = 1;
+            renderTasks();
+        });
+
+        function addTask() {
+            const status = document.getElementById('taskStatus').value;
+            let progress = 0;
+            if (status === 'completed') {
+                progress = 100;
+            } else if (status === 'progress') {
+                progress = 0;
+            }
+
+            const task = {
+                id: Date.now(),
+                name: document.getElementById('taskName').value,
+                category: document.getElementById('taskCategory').value,
+                priority: document.getElementById('taskPriority').value,
+                deadline: document.getElementById('taskDeadline').value,
+                status: status,
+                description: document.getElementById('taskDescription').value,
+                progress: progress,
+                createdAt: new Date().toISOString()
+            };
+
+            tasks.push(task);
+            saveTasks();
+            updateAllStats();
+            clearForm();
+            alert('任务添加成功');
+        }
+
+        function deleteTask(id) {
+            if (confirm('确定要删除这个任务吗？')) {
+                tasks = tasks.filter(t => t.id !== id);
+                saveTasks();
+                renderTasks();
+                renderProgressList();
+                updateAllStats();
+            }
+        }
+
+        function editTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                document.getElementById('editTaskId').value = task.id;
+                document.getElementById('editTaskName').value = task.name;
+                document.getElementById('editTaskCategory').value = task.category;
+                document.getElementById('editTaskPriority').value = task.priority;
+                document.getElementById('editTaskDeadline').value = task.deadline;
+                document.getElementById('editTaskDescription').value = task.description;
+                document.getElementById('editModal').classList.add('active');
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        function showTaskDetail(id) {
+            const task = tasks.find(t => t.id === id);
+            if (!task) return;
+
+            const createdDate = task.createdAt ? new Date(task.createdAt).toLocaleDateString('zh-CN') : '未知';
+
+            document.getElementById('detailContent').innerHTML = `
+                <div class="detail-row">
+                    <span class="detail-label">名称</span>
+                    <span class="detail-value">${task.name}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">分类</span>
+                    <span class="detail-value">${task.category}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">优先级</span>
+                    <span class="detail-value">${getPriorityText(task.priority)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">状态</span>
+                    <span class="detail-value">${getStatusText(task.status)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">进度</span>
+                    <span class="detail-value">
+                        ${task.progress}%
+                        <div class="detail-progress-bar">
+                            <div class="detail-progress-fill" style="width: ${task.progress}%"></div>
+                        </div>
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">截止日期</span>
+                    <span class="detail-value">${task.deadline || '未设置'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">创建时间</span>
+                    <span class="detail-value">${createdDate}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">描述</span>
+                    <span class="detail-value description">${task.description || '无描述'}</span>
+                </div>
+            `;
+
+            document.getElementById('detailEditBtn').onclick = function() {
+                closeDetailModal();
+                editTask(id);
+            };
+
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        function saveTask() {
+            const id = parseInt(document.getElementById('editTaskId').value);
+            const taskIndex = tasks.findIndex(t => t.id === id);
+            if (taskIndex !== -1) {
+                tasks[taskIndex].name = document.getElementById('editTaskName').value;
+                tasks[taskIndex].category = document.getElementById('editTaskCategory').value;
+                tasks[taskIndex].priority = document.getElementById('editTaskPriority').value;
+                tasks[taskIndex].deadline = document.getElementById('editTaskDeadline').value;
+                tasks[taskIndex].description = document.getElementById('editTaskDescription').value;
+                saveTasks();
+                renderTasks();
+                renderProgressList();
+                updateAllStats();
+                closeEditModal();
+            }
+        }
+
+        function updateProgress(id, progress) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.progress = parseInt(progress);
+                if (task.progress === 100) {
+                    task.status = 'completed';
+                } else if (task.progress > 0) {
+                    task.status = 'progress';
+                } else {
+                    task.status = 'pending';
+                }
+                saveTasks();
+                renderTasks();
+                renderProgressList();
+                updateAllStats();
+            }
+        }
+
+        function renderTasks() {
+            const taskList = document.getElementById('taskList');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            let filteredTasks = tasks.filter(task => {
+                const matchesFilter = currentFilter === 'all' || task.status === currentFilter;
+                const matchesSearch = task.name.toLowerCase().includes(searchTerm) ||
+                                     task.description.toLowerCase().includes(searchTerm) ||
+                                     task.category.toLowerCase().includes(searchTerm);
+                return matchesFilter && matchesSearch;
+            });
+
+            if (filteredTasks.length === 0) {
+                taskList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">0</div>
+                        <h3>暂无任务</h3>
+                        <p>创建您的第一个任务开始使用</p>
+                    </div>
+                `;
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+
+            filteredTasks.sort((a, b) => {
+                const priorityOrder = { high: 0, medium: 1, low: 2 };
+                return priorityOrder[a.priority] - priorityOrder[b.priority];
+            });
+
+            const totalPages = Math.ceil(filteredTasks.length / pageSize);
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const paginatedTasks = filteredTasks.slice(startIndex, endIndex);
+
+            taskList.innerHTML = paginatedTasks.map(task => `
+                <div class="task-card priority-${task.priority}" onclick="showTaskDetail(${task.id})">
+                    <div class="task-header">
+                        <div>
+                            <div class="task-title">${task.name}</div>
+                            <div class="task-meta">
+                                <span class="task-tag category">${task.category}</span>
+                                <span class="task-tag priority-${task.priority}">${getPriorityText(task.priority)}</span>
+                                <span class="task-tag status-${task.status}">${getStatusText(task.status)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="task-description">${task.description || '无描述'}</div>
+                    <div class="task-footer">
+                        <div class="task-deadline">${task.deadline ? task.deadline : '无截止日期'}</div>
+                        <div class="task-actions" onclick="event.stopPropagation();">
+                            <button class="task-action-btn edit" onclick="editTask(${task.id})">编辑</button>
+                            <button class="task-action-btn delete" onclick="deleteTask(${task.id})">删除</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            renderPagination(totalPages, filteredTasks.length);
+        }
+
+        function renderPagination(totalPages, totalTasks) {
+            const pagination = document.getElementById('pagination');
+
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+
+            html += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>上一页</button>`;
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    html += `<span class="pagination-info">...</span>`;
+                }
+            }
+
+            html += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>下一页</button>`;
+
+            pagination.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderTasks();
+        }
+
+        function renderProgressList() {
+            const progressList = document.getElementById('progressList');
+
+            if (tasks.length === 0) {
+                progressList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">0</div>
+                        <h3>No Tasks</h3>
+                        <p>Create tasks to track progress here</p>
+                    </div>
+                `;
+                return;
+            }
+
+            tasks.sort((a, b) => {
+                const priorityOrder = { high: 0, medium: 1, low: 2 };
+                if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+                    return priorityOrder[a.priority] - priorityOrder[b.priority];
+                }
+                return a.progress - b.progress;
+            });
+
+            progressList.innerHTML = tasks.map(task => `
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <span class="progress-task-name">${task.name}</span>
+                        <span class="progress-status-badge ${task.status}">${getStatusText(task.status)}</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill ${task.status === 'completed' ? 'completed' : ''}" 
+                             style="width: ${task.progress}%"></div>
+                    </div>
+                    <div class="progress-controls">
+                        <input type="range" class="progress-slider" 
+                               value="${task.progress}" 
+                               min="0" max="100" 
+                               onchange="updateProgress(${task.id}, this.value)">
+                        <span class="progress-value">${task.progress}%</span>
+                        <div class="progress-quick-btns">
+                            <button class="progress-quick-btn" onclick="updateProgress(${task.id}, 0)">0%</button>
+                            <button class="progress-quick-btn" onclick="updateProgress(${task.id}, 50)">50%</button>
+                            <button class="progress-quick-btn" onclick="updateProgress(${task.id}, 100)">100%</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateAllStats() {
+            document.getElementById('totalTasks').textContent = tasks.length;
+            document.getElementById('pendingTasks').textContent = tasks.filter(t => t.status === 'pending').length;
+            document.getElementById('progressTasks').textContent = tasks.filter(t => t.status === 'progress').length;
+            document.getElementById('completedTasks').textContent = tasks.filter(t => t.status === 'completed').length;
+
+            document.getElementById('progressTotalTasks').textContent = tasks.length;
+            document.getElementById('progressPendingTasks').textContent = tasks.filter(t => t.status === 'pending').length;
+            document.getElementById('progressInProgressTasks').textContent = tasks.filter(t => t.status === 'progress').length;
+            document.getElementById('progressCompletedTasks').textContent = tasks.filter(t => t.status === 'completed').length;
+        }
+
+        function clearForm() {
+            document.getElementById('taskForm').reset();
+        }
+
+        function saveTasks() {
+            localStorage.setItem('huiyuTasks', JSON.stringify(tasks));
+        }
+
+        function getPriorityText(priority) {
+            const map = { high: '高', medium: '中', low: '低' };
+            return map[priority] || priority;
+        }
+
+        function getStatusText(status) {
+            const map = { pending: '待处理', progress: '进行中', completed: '已完成' };
+            return map[status] || status;
+        }
+
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
+
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDetailModal();
+            }
+        });
+
+        renderTasks();
+        renderProgressList();
+        updateAllStats();
+    </script>
+</body>
+</html>
